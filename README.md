@@ -3,7 +3,7 @@
 Claude Code로 개인 프로젝트를 PDCA 사이클로 굴리기 위한 스킬 묶음. 한국어 전용.
 
 > 설계 근거는 `docs/redesign.md`에 있다. 이 문서는 **쓰는 법**만 다룬다.
-> 상태: 스킬 6개 · 템플릿 · pdcaw 1.0 · 서버 변경(브랜치)까지 갖춰졌다. 남은 것은 서버 마이그레이션 적용과 첫 실전 사이클.
+> 상태: 스킬 6개 · 템플릿 · pdcaw 1.0.0(npm 게시) · PDCA-workspace v1(main 배포, 마이그레이션 적용)까지 갖춰졌다. 남은 것은 첫 실전 사이클.
 
 ---
 
@@ -33,7 +33,25 @@ propose  →  plan  →  design  →  do (세션 N개)  →  close
 
 ### 2.1 스킬
 
-`skills/` 아래 폴더 여섯 개를 Claude Code 스킬로 등록한다. 개인 스킬(`~/.claude/skills/`)이나 claude.ai 커스텀 스킬 어느 쪽이든 폴더 통째로.
+두 방법 중 하나. 폴더를 하나씩 복사할 필요는 없다.
+
+**플러그인(권장)** — 레포가 Claude Code 플러그인 마켓플레이스다. Claude Code 안에서 두 줄.
+
+```
+/plugin marketplace add SpiritFlag/PDCA-skill
+/plugin install pdca@spiritflag
+```
+
+갱신은 `/plugin marketplace update spiritflag`. 플러그인 스킬은 이름 앞에 플러그인명이 붙는다 — `/pdca:pdca-plan v1.3.0 enhance-foo`, `/pdca:cycle-propose`. 이 문서의 `/pdca-plan …` 예시는 전부 그렇게 읽는다.
+
+**폴더 등록** — `git clone` 뒤 `skills/` 아래 여섯 폴더를 개인 스킬 폴더에 심볼릭 링크하거나 복사한다. 이때는 `/pdca-plan`처럼 이름 그대로 부른다.
+
+```
+git clone https://github.com/SpiritFlag/PDCA-skill ~/PDCA-skill
+ln -s ~/PDCA-skill/skills/* ~/.claude/skills/
+```
+
+claude.ai 커스텀 스킬에 올릴 때도 폴더 통째로(SKILL.md + 템플릿).
 
 | 스킬 | 하는 일 |
 |---|---|
@@ -52,7 +70,7 @@ propose  →  plan  →  design  →  do (세션 N개)  →  close
 npx pdcaw@1 --help
 ```
 
-pdcaw 1.x는 서버 쪽 변경(`cycles.dir` · 6 stage · 백로그 요약/단건/appendDetail)이 배포된 PDCA-workspace를 전제한다. 서버 브랜치 `claude/workspace-v1`이 그 변경이고, 마이그레이션 0004 · 0005를 dev · main에 적용한 뒤 배포한다.
+pdcaw 1.x는 서버 쪽 변경(`cycles.dir` · 6 stage · 백로그 요약/단건/appendDetail)이 배포된 PDCA-workspace를 전제한다. 2026-09-04에 main에 머지 · 배포됐고 마이그레이션 0004 · 0005도 적용됐다. 자기 서버를 따로 돌린다면 그 마이그레이션까지 적용해야 한다.
 
 레포 루트에 두 파일이 필요하다.
 
@@ -276,6 +294,7 @@ pdcaw doc      collect --stage <s> [--major vN] --out <dir|file.md>
 ## 8. 레포 구조
 
 ```
+.claude-plugin/          플러그인 · 마켓플레이스 매니페스트 (`/plugin marketplace add SpiritFlag/PDCA-skill`)
 skills/
   cycle-propose/SKILL.md
   pdca-plan/SKILL.md, plan.template.md

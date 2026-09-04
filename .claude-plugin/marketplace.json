@@ -1,0 +1,12 @@
+{
+  "name": "spiritflag",
+  "owner": { "name": "SpiritFlag" },
+  "plugins": [
+    {
+      "name": "pdca",
+      "source": "./",
+      "description": "pdca-skill v1 — PDCA 사이클 스킬 여섯 개",
+      "version": "1.0.0"
+    }
+  ]
+}

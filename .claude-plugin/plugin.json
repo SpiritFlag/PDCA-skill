@@ -1,0 +1,8 @@
+{
+  "name": "pdca",
+  "description": "pdca-skill v1 — propose → plan → design → do → close 사이클 스킬 여섯 개 (cycle-propose · pdca-plan · pdca-design · pdca-do · pdca-close · backlog-sync)",
+  "version": "1.0.0",
+  "author": { "name": "SpiritFlag" },
+  "repository": "https://github.com/SpiritFlag/PDCA-skill",
+  "keywords": ["pdca", "workflow", "skills"]
+}
