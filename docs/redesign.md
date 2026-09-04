@@ -306,7 +306,7 @@ pdcaw upload   [--cycle <name>] [--version vX.Y.Z] [--all] [--path <p>]...
                --version 시: 릴리즈 생성(있으면 재사용) + 변경 문서 업로드
                + 대상 중 {cycle}.release.md가 있으면 그 내용을 releaseNote로 설정
 pdcaw project  list
-pdcaw cycle    list                                  # version · name · yearMonth · hasReleaseNote
+pdcaw cycle    list                                  # version · name · dir · hasReleaseNote
 pdcaw backlog  list   [--status s,...] [--stale <days>] [--q <text>]   # 요약: id · title · status · priority · openedOn · updatedAt
 pdcaw backlog  get    <id>                            # detail 포함 전체
 pdcaw backlog  create --title <t> --priority <p> --opened-on <d> [--detail-file <f> | --detail <t>]
