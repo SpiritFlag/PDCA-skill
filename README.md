@@ -255,7 +255,7 @@ pdcaw doc      collect --stage <s> [--major vN] --out <dir|file.md>
 
 모두 `--json`을 받는다. 스킬은 `--json`만 쓴다. `backlog list`는 detail 없는 요약이라 100건이 넘어도 컨텍스트에 들어오고, detail은 `get`으로 한 건씩 본다. `--append-detail`은 기존 본문을 그대로 두고 앞에 블록을 얹는다. `--status todo`는 거부한다(재개는 사용자가 UI에서). `doc collect`는 로컬만 본다(리포트만 싹 긁어 웹 클로드에 올릴 때).
 
-`upload --version v1.2.0`은 `docs/PDCA/*/v1.2.0-*/` 폴더를 찾아 릴리즈를 만들고(있으면 재사용), 변경 문서를 올린 뒤, 그 폴더의 `*.release.md`를 릴리즈노트로 넣는다. 폴더가 없거나 둘이면 아무것도 하지 않고 멈춘다.
+`upload --version v1.2.0`은 `docs/PDCA/*/v1.2.0-*/` 폴더를 찾아 릴리즈를 만들고(있으면 재사용), 변경 문서를 올린 뒤, 그 폴더의 `*.release.md`를 릴리즈노트로 넣는다. 폴더가 없거나 둘이면 아무것도 하지 않고 멈춘다. 기준선은 v1.2.0 자신을 뺀 최신 태그라 태그를 먼저 찍고 실행해도 된다. 옛 사이클을 소급 등록할 땐 `--version v0.1.1 --path docs/PDCA/v0/v0.1.1-x`처럼 그 폴더만 올린다.
 
 ## 7. 자주 묻는 것
 

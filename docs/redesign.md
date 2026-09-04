@@ -351,11 +351,13 @@ docs/PDCA/
 `upload` 하나짜리에서 스킬의 유일한 서버 접점이 된다. REST는 이미 PAT를 받으므로(`authMiddleware`가 `pdcaw_` 해시 조회) MCP를 거치지 않고 REST를 친다. 모든 명령은 `--json`을 받고, 스킬은 `--json`만 쓴다.
 
 ```
-pdcaw upload   [--version vX.Y.Z] [--all] [--path <p>]...
+pdcaw upload   [--version vX.Y.Z] [--all | --path <p>...]
                --version 시: docs/PDCA/*/{version}-*/ 폴더를 찾아 사이클명 · dir을 얻고
                릴리즈 생성(있으면 재사용) + 변경 문서 업로드
                + 그 폴더의 *.release.md가 있으면 그 내용을 releaseNote로 설정
-               --cycle 필터는 없앤다. 부분 동기화는 --path로
+               기준선은 --version 자신을 제외한 최신 태그 (태그 뒤에 실행해도 diff가 비지 않음)
+               --version --path: 소급 릴리즈. 그 경로만 올리므로 중복 전송 없음
+               --cycle 필터는 없앤다
 pdcaw project  list
 pdcaw cycle    list                                  # version · name · dir · hasReleaseNote
 pdcaw backlog  list   [--status s,...] [--stale <days>] [--q <text>]   # 요약: id · title · status · priority · openedOn · updatedAt
