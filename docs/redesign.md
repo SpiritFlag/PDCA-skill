@@ -1,6 +1,7 @@
 # PDCA 체계 대개편 설계
 
 > 이 문서는 PDCA 체계(스킬 · 문서 규약 · pdcaw CLI · PDCA-workspace)를 통째로 다시 세우는 큰그림이다.
+> bkit을 계승하지 않는다. 이 체계는 `pdca-skill v1`이다.
 > 이 개편 자체는 PDCA 사이클로 돌리지 않는다. 새 체계의 첫 실전 사이클(sing-diary)이 이 설계의 검증이다.
 >
 > 상태: 설계 중. 결정된 항목은 본문에, 미결은 §10에 둔다.
@@ -53,6 +54,19 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 - do 세션에서 설계를 바꿔야 하면 질문 파일을 만들고 멈춘다(§3.3). 답을 받으면 design.md를 개정하고(Version History 행) 계속한다. do 세션이 design.md를 고치는 유일한 경우다.
 - close는 do.md의 모든 배치가 `검증 완료`일 때만 시작한다.
 
+### 2.1 두 트랙
+
+| | 사이클 | 패치 |
+|---|---|---|
+| 언제 | 설계가 필요한 일 | 해보니 안 맞아서 바로 고칠 것 |
+| 문서 | 6종 | `release` 하나 |
+| 버전 | minor 이상 | patch |
+| 종류 | `explore` `adopt` `enhance` `refine` | `fix`. 설계가 필요한 fix는 사이클로 올릴 수 있다 |
+| 시작 | `cycle-propose` → `pdca-plan`, 또는 `pdca-plan`에 직접 지시 | 그냥 고친다 |
+| 끝 | `pdca-close` | `pdca-close`. plan.md가 없으면 패치 모드: release → 인덱스 행 → 훅 → 커밋 → 업로드 → 태그 → backlog-sync |
+
+백로그는 입구 중 하나일 뿐 필수 관문이 아니다. 사이클은 plan §2.1에 "직접 지시: {문장}"으로 백로그 없이 시작할 수 있고, 패치는 백로그 항목에서 나왔으면 close가 done 처리하고 아니면 아무것도 만들지 않는다.
+
 **웹 검수 루프(plan · design 공통)**
 1. 스킬이 초안을 쓰고 문서 경로만 보고하고 멈춘다.
 2. 사용자가 웹 클로드에 문서를 옮겨 문답하고, 의견을 CC에 붙여넣는다.
@@ -63,8 +77,24 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 
 ### 3.1 위치 · 이름 · 언어
 
-- `docs/PDCA/YYYY-MM/{cycle}/{cycle}.{stage}.md`. YYYY-MM은 plan 작성 월. 사이클이 끝나도 옮기지 않는다.
-- stage 6종, 이 순서: `plan` `design` `do` `analysis` `report` `release`.
+```
+docs/PDCA/
+  v0/                                        메이저 폴더. 코드네임 없으면 숫자만
+    v0.13.2-refine-backlog-hygiene/          사이클 폴더 = {버전}-{사이클명}
+      v0.13.2-refine-backlog-hygiene.plan.md 파일 어간 = 폴더명
+      v0.13.2-refine-backlog-hygiene.report.md
+  v1-sunrise/                                메이저 = 시대. 코드네임은 메이저 시작 때 정한다
+    v1.2.0-enhance-lyric-sync/
+    v1.2.1-fix-lyric-offset/                 패치도 같은 층. 버전이 정렬을 보장
+      v1.2.1-fix-lyric-offset.release.md     패치 트랙은 release 하나만
+  _INDEX.md
+```
+
+- 버전을 시작에 정하므로(§5.1) 폴더에 버전을 쓸 수 있다. `YYYY-MM` 폴더는 버전을 close에서야 알던 시절의 대체물이었다.
+- 폴더명과 파일 어간이 같아야 한다. 폴더에서 꺼내 놓아도 자기식별되고 버전순 정렬된다. 긴 것은 감수한다.
+- 메이저 폴더 이름은 `v{N}` 또는 `v{N}-{codename}`. 코드네임은 메이저를 시작할 때 정한다. 뒤늦게 붙이면 폴더 개명이고, 링크가 없으니 레포 쪽은 안전하지만 서버 경로는 `pdcaw doc move`(§7)로 옮겨야 한다.
+- 사이클이 끝나도 옮기지 않는다.
+- stage 6종, 이 순서: `plan` `design` `do` `analysis` `report` `release`. 패치 트랙(§2.1)은 `release`만 쓴다.
 - 한국어, `.md`만. 사용자는 문서 안에서 "사용자"로 부른다.
 - 인덱스는 `docs/PDCA/_INDEX.md` 하나.
 - PDCA 밖 문서는 `docs/{주제}/`에 둔다. `docs/` 아래에는 서버에 올라가도 되는 것만 둔다.
@@ -124,7 +154,7 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 - **질문**: 왜 지금 이걸 하나, 어디까지 하나, 끝났다는 걸 어떻게 아나.
 - **담는 것**
   1. 목적: 한 단락. 백로그 항목 문장을 인용한다. 선행 사이클과의 관계.
-  2. 범위: 포함(번호로 세어 N건 고정) / 제외(인접해서 손대고 싶어질 것을 미리 열거) / 발견 시 처리(고치지 말고 백로그로).
+  2. 범위: 포함(백로그 id로 세어 N건 고정. 백로그 없이 시작한 사이클은 "직접 지시: {문장}") / 제외(인접해서 손대고 싶어질 것을 미리 열거) / 발견 시 처리(고치지 말고 백로그로).
   3. 실측: F-n. 추정 금지. 파일 · 함수 · 스키마를 직접 읽어 확정한 사실. 성패를 가르는 것은 ★.
   4. 요구사항: FR-n.
   5. 성공 기준: SC-n. 각 기준에 검증 수단(자동 테스트 / 사용자 육안 / 로그 · 수치)을 열로 붙인다. 사람 손이 필요한 비율이 높으면 그 사실을 적는다.
@@ -195,13 +225,13 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 - **독자**: 서비스 사용자. 게임 공지 톤.
 - **질문**: 이번 버전에서 무엇이 달라졌나.
 - **재료**: report, 직전 태그~이번 태그 git diff, do.md 검증 기록, 직전 release(연속성).
-- **규칙**: 기존 릴리즈노트 규칙 v2를 계승한다. 카테고리(✨기능 🔒보안 🛠️버그수정 ⚡성능 🎨UI/UX) 중 해당 없는 것은 섹션 생략, "-습니다" 체, 내부 식별자 대신 동작과 효익, 확인되지 않은 기능은 쓰지 않음(report 주장을 diff로 대조), 버전 간 중복 공지 금지, 다부작이면 시리즈 내 위치 언급, outro는 규모 반영.
+- **규칙**: 웹 클로드에서 쓰던 릴리즈노트 생성 규칙을 계승한다. 카테고리(✨기능 🔒보안 🛠️버그수정 ⚡성능 🎨UI/UX) 중 해당 없는 것은 섹션 생략, "-습니다" 체, 내부 식별자 대신 동작과 효익, 확인되지 않은 기능은 쓰지 않음(report 주장을 diff로 대조), 버전 간 중복 공지 금지, 다부작이면 시리즈 내 위치 언급, outro는 규모 반영.
 - **버림**: 파일명에서 버전 추출(태그와 헤더가 진실), `/mnt/user-data/outputs` 경로, 제품명 하드코딩(프로젝트명은 `.pdcarc.json`), `.report.ko.md` 분기.
 - 서버에서는 이 문서가 그 버전의 릴리즈노트다(§7.4).
 
 ### 3.5 인덱스 (`docs/PDCA/_INDEX.md`)
 
-열 6개 고정: `| 버전 | 날짜 | 사이클 | 종류 | 한 줄 요약 | 문서 |`. 최신이 위. 한 줄 요약은 결과만, 60자 내외, 수치 최대 2개, 이월 · 후속 언급 금지. 문서 열은 존재하는 stage를 ` · `로 나열.
+메이저마다 절을 둔다(`## v1 해돋이 (sunrise)`). 최신 메이저가 위. 절 안은 열 6개 고정: `| 버전 | 날짜 | 사이클 | 종류 | 한 줄 요약 | 문서 |`. 최신이 위. 한 줄 요약은 결과만, 60자 내외, 수치 최대 2개, 이월 · 후속 언급 금지. 문서 열은 존재하는 stage를 ` · `로 나열(패치는 `release`만). 링크 없음.
 
 행은 **close에서** 추가한다(사이클 시작 시가 아니라). 진행 중 사이클은 폴더의 존재가 말해준다.
 
@@ -217,13 +247,15 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 ### 5.1 버전은 사이클 시작에 정한다
 
 - `cycle-propose`가 안을 낼 때 각 안에 버전을 함께 제안한다. `pdca-plan`은 확정 버전을 헤더에 적는다. 이후 문서는 복사한다. close의 태그는 이 버전이다.
-- 추천 규칙(semver): `fix` `refine` → patch, `enhance` `adopt` `explore` → minor, major는 사용자 지시가 있을 때만. 규칙은 추천일 뿐 사용자가 바꿀 수 있다.
+- 추천 규칙(semver): 패치 트랙(`fix`) → patch, 사이클 트랙(`refine` `enhance` `adopt` `explore`) → minor, major는 사용자가 새 시대를 열 때만(코드네임과 함께). 규칙은 추천일 뿐 사용자가 바꿀 수 있다.
+- 패치는 시작 절차가 없으므로 close가 최신 태그의 patch를 올려 제안하고 확인받는다.
 - 근거는 `git tag`(로컬)와 `pdcaw cycle list`(서버) 둘 다 본다. 서버에 예약된 미래 버전(예: 0.14.0이 예약된 채 0.13.2가 최신)이 있으면 그 사다리를 존중한다.
 - 시작 시 정한 버전이 close에서 충돌하면(그 사이 다른 사이클이 같은 번호를 썼다면) close가 멈추고 묻는다. 자동으로 올리지 않는다.
 
 ### 5.2 사이클명
 
-- 형태 `<종류>-<대상>`, 케밥 케이스. 종류는 `explore` `adopt` `enhance` `refine` `fix` 5개. 날짜 · 버전 · 순번은 넣지 않는다.
+- 형태 `<종류>-<대상>`, 케밥 케이스. 종류는 `explore` `adopt` `enhance` `refine` `fix` 5개. 날짜 · 버전 · 순번은 넣지 않는다(버전은 폴더 · 파일 어간이 붙인다).
+- 사이클명은 **일의 단위**만 말한다. 시대(코드네임)는 메이저 폴더가 맡는다. 둘을 한 이름에 담지 않는다.
 - **프로젝트 이력 전체에서 유일**해야 한다. `cycle-propose`와 `pdca-plan`은 `docs/PDCA/*/` 폴더명과 `pdcaw cycle list`의 name을 대조해, 겹치면 그 이름을 추천하지 않는다. 대상 어휘가 같은 이름(예: `refine-backlog` vs `refine-backlog-hygiene`)은 경고와 함께 구분 근거를 요구한다.
 - 종류가 둘에 걸치면 지배적인 하나. 못 고르면 응집도가 낮은 것이니 쪼갠다.
 
@@ -251,6 +283,7 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 
 ### 6.2 pdca-close 절차 개요
 
+0. 모드 판정: 사이클 폴더에 plan.md가 있으면 사이클 모드, 없으면 패치 모드(4 → 5 → 6 → 7 → 8 → 9 → 10만 수행. 버전은 최신 태그 patch +1을 제안해 확인받고 폴더 `v{major}/{버전}-fix-{대상}/`을 만든다).
 1. 게이트: do.md 배치 전건 `검증 완료`, `*.q*.md` 없음, 헤더 버전과 `git tag` · `pdcaw cycle list` 충돌 없음.
 2. analysis.md 작성(감사). 결함은 즉시 수정 · 재검증하거나 report §3으로.
 3. report.md 작성.
@@ -279,6 +312,10 @@ pdcaw backlog  get    <id>                            # detail 포함 전체
 pdcaw backlog  create --title <t> --priority <p> --opened-on <d> [--detail-file <f> | --detail <t>]
 pdcaw backlog  update <id> [--status s] [--closed-on d] [--title t] [--priority p]
                            [--append-detail <t|@file>] [--detail-file <f>]
+pdcaw doc      collect --stage <s> [--major vN] --out <dir|file>
+                                                      # 로컬 docs/PDCA에서 한 stage를 한 폴더로 복사 또는 한 파일로 이어붙임
+                                                      # (이어붙일 때 파일마다 경로 헤딩). GUI 선택기용. 서버 불요
+pdcaw doc      move <from-dir> <to-dir>               # 서버 문서 경로 일괄 이동(메이저 코드네임 뒤늦게 붙일 때)
 pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--stage s] [--cycle c]
                                                       # 서버 문서용. CC에서는 로컬 grep을 쓰므로 후순위
 ```
@@ -293,7 +330,7 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 
 절차 본문이 스킬로 옮겨가므로 프로젝트 `docs/RULE.md`는 짧아진다.
 
-- 이 프로젝트가 어떤 체계를 따르는지 한 줄(`pdca-skill v2`).
+- 이 프로젝트가 어떤 체계를 따르는지 한 줄(`pdca-skill v1`).
 - 검증 수단: 이 프로젝트에서 가용한 것(예: Unity Test Runner PlayMode, 육안 확인은 사용자).
 - 브랜치 전제(태그가 붙는 브랜치).
 - **종료 훅**: close 6번에서 이 프로젝트가 추가로 하는 일. 예: README 갱신, `docs/fishing/fishing-code-guide.md` 갱신, `ProjectSettings/ProjectSettings.asset`의 `bundleVersion` · `AndroidBundleVersionCode`.
@@ -303,10 +340,12 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 
 ## 9. PDCA-workspace 변경
 
-### 9.1 stage 확장
-- `pdcaStageSchema` · `pdca_stage` enum에 `do` `release` 추가. 마이그레이션 1건(dev · main 각각 적용).
+### 9.1 stage · 경로 확장
+- `pdcaStageSchema` · `pdca_stage` enum에 `do` `release` 추가. 마이그레이션(dev · main 각각 적용).
 - `PDCA_STAGES` 6종, `STAGE_COLOR` 6색, 릴리즈 페이지 문서 버튼 4 → 6, 사이드바 트리 동일.
-- `cyclePath` 파서 정규식 stage 그룹 확장. pdcaw `cycle-path.ts` 사본도 함께.
+- **경로를 계산하지 않고 기록한다.** `cycles.yearMonth` → `cycles.dir`(사이클 폴더 경로, 예 `docs/PDCA/v1-sunrise/v1.2.0-enhance-lyric-sync`). pdcaw가 올린 실제 경로를 저장하고 UI는 `{dir}/{basename(dir)}.{stage}.md`로 문서를 찾는다. 기존 행은 마이그레이션에서 `docs/PDCA/{yearMonth}/{name}`으로 채운다.
+- 파서 규칙은 하나로 줄인다: `docs/PDCA/**/{stem}/{stem}.{stage}.md`, 폴더명 == 파일 어간. 상위 경로는 자유. pdcaw `cycle-path.ts` 사본도 함께.
+- 사이클 생성 시 `name`은 어간에서 버전 접두를 뗀 사이클명(`enhance-lyric-sync`), `version`은 접두(`v1.2.0`). 둘이 어긋나면 pdcaw가 중단한다.
 
 ### 9.2 백로그 API
 - `GET /projects/:id/backlog`: 기본 응답에서 `detail` 제외. `?detail=1`로 포함. `?stale=<days>` `?q=<text>` 필터.
