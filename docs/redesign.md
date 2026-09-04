@@ -195,7 +195,7 @@ docs/PDCA/
 - **담는 것**
   1. 결정: D-n. 결정 지점을 먼저 나열한다. **갈림길인 것만** 선택지를 펼친다. 선택지는 실재하는 만큼(둘이든 넷이든), 각각의 대가, 추천 하나와 이유. 동률이면 동률이라 쓰고 사용자가 고른다. 갈림길이 아닌 결정은 "이렇게 한다, 이유는 이것" 한 줄.
   2. 변경 지점: 신설 · 수정 · 삭제 파일과 각각의 책임. 인터페이스(시그니처 · 스키마 · 이벤트)는 코드 수준으로.
-  3. 구현 배치: B-n. 3~5파일 단위. 배치마다 **검증 방법**(무엇을 어떻게 확인하면 이 배치가 끝난 것인가)을 붙인다. 세션 분할 권고.
+  3. 구현 배치: B-n. 3~5파일 단위. 배치마다 **검증 방법**(무엇을 어떻게 확인하면 이 배치가 끝난 것인가)을 붙인다. 배치는 **모듈**(케밥 이름, 세션 하나 분량)로 묶는다. `pdca-do --scope <모듈>`이 이 이름을 쓴다.
   4. 열린 질문: design이 답하지 못한 것. 비어 있어야 확정할 수 있다.
 - **담지 않는 것**: plan 재진술(목적 · 배경 · 원칙), 프로젝트 상수(계층 규칙 · 네이밍 · import 순서), 진행 상황.
 - **개정**: 웹 검수 반영. 확정 후에는 질문 파일 답을 반영할 때만. **do 세션이 진행 기록을 여기에 쓰지 않는다.**
@@ -294,12 +294,13 @@ docs/PDCA/
 | `cycle-propose` | 다음 사이클을 정할 때 | `pdcaw backlog list`, 직전 report, git 태그, `pdcaw cycle list` | 없음 | 백로그 변경, 문서 작성 |
 | `pdca-plan` | 사이클명 · 버전이 정해진 뒤 | 백로그 detail, 코드, 직전 report §5 Try | plan.md | 코드 수정, 커밋, design 착수 |
 | `pdca-design` | plan 확정 뒤 | 확정 plan, 코드 | design.md | 코드 수정, 커밋, 구현 착수 |
-| `pdca-do` | design 확정 뒤. 배치 번호를 인자로 받을 수 있음 | 확정 design, do.md | 코드, do.md, qN.md | design 임의 변경, 기준 변경, 검증 없이 다음 배치 |
+| `pdca-do` | design 확정 뒤. `--scope <모듈명 또는 B-n,…>` 없으면 다음 미착수 모듈 | 확정 design, do.md | 코드, do.md, qN.md | design 임의 변경, 기준 변경, 검증 없이 다음 배치 |
 | `pdca-close` | do 전 배치 검증 완료 뒤 | plan · design · do, git diff | analysis · report · release · `_INDEX.md`, 태그 | 버전 임의 변경, 폐기 결정, 푸시 전 확인 생략 |
 | `backlog-sync` | close 마지막 단계(단독 실행도 가능) | report §3 · §5 · §6 · §7, `pdcaw backlog list/get` | `pdcaw backlog create/update` | `dropped` · `todo` 복원 찍기, 부분 해결 닫기 |
 
 ### 6.1 스킬 공통 규칙
 
+- **호출 형태.** `pdca-plan`만 버전 · 사이클명(· 직접 지시 문장)을 받아 브랜치와 폴더를 만든다. `pdca-design` `pdca-do` `pdca-close`는 현재 브랜치 `{버전}-{사이클명}`에서 사이클을 읽는다. 브랜치에 없을 때만 버전을 인자로 준다.
 - 시작 시 `.pdcarc.json`으로 프로젝트를 식별한다. 없으면 묻는다.
 - 시작 시 프로젝트 `docs/RULE.md`를 읽는다. RULE.md는 **프로젝트별 예외와 종료 훅**만 담는다(§8). 절차 본문은 스킬이 정본이다.
 - 선행 문서 헤더 상태를 확인하고 게이트를 지킨다(§2).
@@ -432,7 +433,7 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 
 ## 12. 미결
 
-1. do 세션 인자: 배치 번호(`B2`)만 받을지, "다음 미착수 배치"를 기본으로 할지. 후자 추천.
+1. (해결) do 세션 인자: `--scope <모듈 | B-n,…>`, 없으면 다음 미착수 모듈.
 2. `pdcaw backlog list --stale`의 기본 일수. backlog-sync 현행은 14일.
 3. release 문서의 이모지 · 톤이 프로젝트마다 다를 수 있음(게임 vs CLI). RULE.md 훅으로 톤 지정을 허용할지.
 4. 웹 클로드가 서버 문서를 읽을 때(§9.3) 기본을 outline으로 할지 전체로 할지.
