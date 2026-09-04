@@ -40,11 +40,13 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 
 | 단계 | 모델 | 스킬 | 읽는 것 | 쓰는 것 | 끝나는 조건 |
 |---|---|---|---|---|---|
-| propose | 아무나 | `cycle-propose` | 백로그(CLI), 직전 report | 없음(제안만) | 사용자가 안 하나를 고르고 버전 · 사이클명 확정 |
+| propose | Opus | `cycle-propose` | 백로그(CLI), 직전 report | 없음(제안만) | 사용자가 안 하나를 고르고 버전 · 사이클명 확정 |
 | plan | Fable | `pdca-plan` | 코드, 백로그 항목 detail, 직전 report | `plan.md` | 헤더 상태 `확정` |
-| design | Opus | `pdca-design` | 확정 plan, 코드 | `design.md` | 헤더 상태 `확정` |
+| design | Fable(`adopt` `explore`) / Opus(그 외) | `pdca-design` | 확정 plan, 코드 | `design.md` | 헤더 상태 `확정` |
 | do | Sonnet | `pdca-do` | 확정 design, do.md(이전 세션) | 코드, `do.md`, 필요 시 `qN.md` | do.md 배치 전건 검증 완료 |
-| close | Sonnet | `pdca-close` → `backlog-sync` | plan · design · do, git diff | `analysis.md` `report.md` `release.md` `_INDEX.md` | 태그 푸시, 백로그 갱신 보고 |
+| close | Opus | `pdca-close` → `backlog-sync` | plan · design · do, git diff | `analysis.md` `report.md` `release.md` `_INDEX.md` | 태그 푸시, 백로그 갱신 보고 |
+
+**모델 분배의 근거**: 이득의 대부분은 모델 차이가 아니라 세션 분리(단계마다 확정 문서만 들고 새 컨텍스트로 시작)에서 온다. 그 위에서 판단하는 단계(plan · design · close)는 Opus 이상, 실행하는 단계(do)는 Sonnet이 기준선이다. Fable은 plan과 새 영역 design에만 쓴다. Design의 빠진 결정 지점 하나가 do의 질문 파일 하나이고 그게 사용자 왕복 하나라서, 새 영역일수록 design에 더 강한 모델을 쓴다. close는 감사 · 회고 · 릴리즈노트 · 백로그 판정이 겹치는 판단 단계라 Sonnet에서 Opus로 올린다. 웹 검수 모델은 작성 모델보다 약하지 않아야 한다.
 
 **게이트**
 - plan이 `확정`이 아니면 design 세션을 열지 않는다. design이 `확정`이 아니면 do 세션을 열지 않는다. 스킬은 시작 시 선행 문서 헤더를 읽어 이를 확인하고, 아니면 이유를 말하고 멈춘다.
@@ -88,6 +90,8 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 **작성 방식**: 골격(헤딩 전부)을 먼저 쓰고 절 하나씩 채운다. 한 번에 통째로 쓰지 않는다.
 
 **참조 표기**: 다른 문서의 절을 가리킬 때 문서명을 붙인다. `Plan §3`, `Design D-4`, `Do B2`. 번호만 쓰지 않는다(7차 M-5 재발 방지).
+
+**링크 금지**: PDCA 문서 안에 마크다운 링크(`[..](..)`)를 쓰지 않는다. 파일이 옮겨지거나 이름이 바뀔 때마다 링크 검사 CI가 깨진다. 다른 문서는 `Plan §3`처럼 이름으로, 파일은 `` `src/foo.ts` ``처럼 경로를 인라인 코드로, 백로그 항목은 id로 가리킨다. 인덱스의 문서 열도 stage 이름만 나열한다. 외부 URL이 꼭 필요하면(CVE, 공식 문서) 그때만 링크를 허용하되 사이클 문서 안 상호 링크는 예외 없이 금지한다.
 
 **ID 체계**
 | ID | 뜻 | 사는 곳 |
@@ -339,6 +343,7 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 | MCP 프롬프트 2개 | 스킬로 이동 |
 | 스킬의 MCP 툴 직접 호출과 두 겹 JSON 파싱 지침 | `pdcaw --json` |
 | `.tmp` 질문 파일 | `{cycle}.qN.md` |
+| 문서 간 마크다운 상호 링크, 인덱스의 폴더 링크 | 파일 이동 · 개명 시 링크 검사 CI가 깨짐. 이름 · 경로 인라인 코드 · id로 참조 |
 
 ## 11. 작업 순서
 
@@ -358,3 +363,4 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 3. release 문서의 이모지 · 톤이 프로젝트마다 다를 수 있음(게임 vs CLI). RULE.md 훅으로 톤 지정을 허용할지.
 4. 웹 클로드가 서버 문서를 읽을 때(§9.3) 기본을 outline으로 할지 전체로 할지.
 5. sing-diary의 검증 수단 목록(RULE.md에 적을 것). 프로젝트를 보고 정한다.
+6. §2 모델 열은 제안 상태. 사용자 확정 대기.
