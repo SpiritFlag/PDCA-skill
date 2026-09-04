@@ -88,6 +88,8 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 
 close가 CI 상태를 직접 읽으려면 `gh` 같은 도구가 필요한데 환경마다 다르다. RULE.md에 CI 확인 명령을 두고, 없으면 close가 사용자에게 CI 초록을 확인받고 진행한다.
 
+**릴리즈 브랜치 전진의 변형.** main이 GitHub 룰셋으로 직푸시 금지면 ff가 불가능하다. 그 프로젝트는 RULE.md에 `PR merge commit` 방식을 적는다: develop → main PR을 Merge commit으로 병합하고 develop에 main을 백머지한다. Squash · Rebase는 태그 SHA를 main 밖에 남기므로 금지. 태그는 develop 머지 커밋에 찍고, `git branch -a --contains {버전}`에 main · develop이 둘 다 나오면 정렬된 것이다(sing-diary가 이 변형).
+
 "PDCA 문서는 사이클 도중 커밋하지 않는다" 규칙은 폐기한다. 사이클 브랜치가 있으니 develop 역사는 머지 커밋 하나로 깨끗하고, 휘발성 환경에서 문서를 커밋 없이 들고 있는 위험이 더 크다.
 
 사이클 두 개를 동시에 돌리면 `_INDEX.md` 맨 위 행에서 충돌한다. 순차가 기본이고 병행은 수동 해결로 감수한다.

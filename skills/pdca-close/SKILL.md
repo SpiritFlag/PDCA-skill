@@ -111,16 +111,26 @@ npx pdcaw@1 upload --version {버전}
 ```
 릴리즈 생성(있으면 재사용) + 변경 문서 업로드 + release.md를 릴리즈노트로. 실패하면 출력을 그대로 보고하고 §10으로 가지 않는다.
 
-## 10. main 전진 (확인 필요)
+## 10. 릴리즈 브랜치 전진 (확인 필요)
 
-통합 브랜치 CI가 초록인지 확인한다(명령 또는 사용자). 초록이면 사용자에게 묻고:
+통합 브랜치 CI가 초록인지 확인한다(명령 또는 사용자). 초록이면 사용자에게 묻고 RULE.md의 전진 방식대로 한다.
 
-```
-git switch {릴리즈}
-git merge --ff-only {버전}
-git push origin {릴리즈}
-```
-빨가면 main을 건드리지 않고 "패치 트랙으로 잇는다: `git switch -c {patch버전}-fix-{대상} {통합}`"을 안내한다. 태그는 되돌리지 않는다.
+- `ff-only`:
+  ```
+  git switch {릴리즈}
+  git merge --ff-only {버전}
+  git push origin {릴리즈}
+  ```
+- `PR merge commit`(main 직푸시 금지 프로젝트):
+  ```
+  gh pr create --base {릴리즈} --head {통합} --title "release: {사이클명} {버전}"
+  gh pr checks <PR>          # 통과 확인
+  # 사용자 확인 후 Merge commit으로 병합 (Squash · Rebase 금지)
+  git switch {통합} && git fetch origin && git merge origin/{릴리즈} && git push origin {통합}
+  git branch -a --contains {버전}   # main · develop 둘 다 나와야 한다
+  ```
+
+빨가면 릴리즈 브랜치를 건드리지 않고 "패치 트랙으로 잇는다: `git switch -c {patch버전}-fix-{대상} {통합}`"을 안내한다. 태그는 되돌리지 않는다.
 
 ## 11. 백로그 동기화
 

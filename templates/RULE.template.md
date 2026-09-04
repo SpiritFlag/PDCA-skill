@@ -15,9 +15,12 @@ Plan §5의 SC에 붙일 수 있는 수단. 여기 없는 수단을 SC에 쓰지
 
 ## 브랜치 · CI
 
-- 통합 브랜치: `develop`. 릴리즈 포인터: `main`. 다르면 여기 적는다.
+- 통합 브랜치: `develop`. 릴리즈 브랜치: `main`. 다르면 여기 적는다.
 - 사이클 브랜치는 `{버전}-{사이클명}`, develop에서 분기.
-- CI 확인 명령: `{예: gh run list --branch <브랜치> --limit 1}`. 없으면 "사용자 확인"이라 쓴다. close가 게이트와 main 전진 전에 이걸 쓴다.
+- 릴리즈 전진 방식(둘 중 하나를 지운다):
+  - `ff-only`: `git switch main && git merge --ff-only {버전} && git push`. main 직푸시가 허용될 때.
+  - `PR merge commit`: main이 GitHub 룰셋으로 보호돼 직푸시가 안 될 때. `gh pr create --base main --head develop` → status check 통과 → Merge commit 병합 → develop에 main 백머지. Squash · Rebase 병합 금지(태그 SHA가 main 밖에 남는다).
+- CI 확인 명령: `{예: gh run list --branch <브랜치> --limit 1, gh pr checks <PR>}`. 없으면 "사용자 확인"이라 쓴다. close가 게이트와 릴리즈 전진 전에 이걸 쓴다.
 
 ## 종료 훅
 
