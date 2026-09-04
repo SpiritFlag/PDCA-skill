@@ -42,7 +42,14 @@ propose  →  plan  →  design  →  do (세션 N개)  →  close
 /plugin install pdca@spiritflag
 ```
 
-갱신은 `/plugin marketplace update spiritflag`. 플러그인 스킬은 이름 앞에 플러그인명이 붙는다 — `/pdca:pdca-plan v1.3.0 enhance-foo`, `/pdca:cycle-propose`. 이 문서의 `/pdca-plan …` 예시는 전부 그렇게 읽는다.
+갱신은 두 줄이다. 첫 줄은 마켓플레이스 목록만 새로 받고, 실제로 설치된 플러그인을 바꾸는 건 둘째 줄이다. 적용은 **재시작 후**다.
+
+```
+/plugin marketplace update spiritflag
+/plugin update pdca@spiritflag
+```
+
+플러그인 스킬은 이름 앞에 플러그인명이 붙는다 — `/pdca:pdca-plan v1.3.0 enhance-foo`, `/pdca:cycle-propose`. 이 문서의 `/pdca-plan …` 예시는 전부 그렇게 읽는다.
 
 **폴더 등록** — `git clone` 뒤 `skills/` 아래 여섯 폴더를 개인 스킬 폴더에 심볼릭 링크하거나 복사한다. 이때는 `/pdca-plan`처럼 이름 그대로 부른다.
 

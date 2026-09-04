@@ -1,12 +1,15 @@
 {
   "name": "spiritflag",
-  "owner": { "name": "SpiritFlag" },
+  "owner": {
+    "name": "SpiritFlag"
+  },
+  "description": "SpiritFlag의 Claude Code 플러그인 마켓플레이스. 개인 프로젝트를 PDCA 사이클로 굴리는 한국어 스킬 묶음을 배포한다.",
   "plugins": [
     {
       "name": "pdca",
       "source": "./",
       "description": "pdca-skill v1 — PDCA 사이클 스킬 여섯 개",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }
