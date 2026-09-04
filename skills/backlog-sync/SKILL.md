@@ -13,7 +13,7 @@ description: "백로그 동기화 — 닫힌 PDCA 사이클의 report를 기준�
 > ②가 없으면 보드는 반드시 쌓이기만 한다.
 
 > **공통 규칙**
-> - 서버 접근은 `npx pdcaw@1 … --json`뿐이다. MCP 툴을 부르지 않는다.
+> - 서버 접근은 `npx --no-audit -y pdcaw@1 … --json`뿐이다. MCP 툴을 부르지 않는다.
 > - 문서는 디스크에서 읽는다. 사용자는 "사용자"다.
 > - `dropped`와 `todo` 복원은 사람 전용이다. CLI도 `todo`를 거부한다.
 
@@ -21,14 +21,14 @@ description: "백로그 동기화 — 닫힌 PDCA 사이클의 report를 기준�
 
 ## 0. 프로젝트 · 사이클 확정
 
-- 프로젝트: `.pdcarc.json`의 `projectId`. `npx pdcaw@1 project list --json`으로 이름을 확인해 밝힌다. 없으면 후보를 나열하고 사용자가 고른다.
-- 사이클: `/pdca-close`에서 불렸으면 방금 닫은 버전. 단독 실행이면 현재 브랜치 `{버전}-{사이클명}`에서 읽고, 그것도 아니면 `npx pdcaw@1 cycle list --json`에서 **가장 최근에 만들어진** 버전(`createdAt` 기준, 가장 높은 버전이 아니다 — 예약 버전이 있을 수 있다)을 후보로 한 줄 확인받는다.
+- 프로젝트: `.pdcarc.json`의 `projectId`. `npx --no-audit -y pdcaw@1 project list --json`으로 이름을 확인해 밝힌다. 없으면 후보를 나열하고 사용자가 고른다.
+- 사이클: `/pdca-close`에서 불렸으면 방금 닫은 버전. 단독 실행이면 현재 브랜치 `{버전}-{사이클명}`에서 읽고, 그것도 아니면 `npx --no-audit -y pdcaw@1 cycle list --json`에서 **가장 최근에 만들어진** 버전(`createdAt` 기준, 가장 높은 버전이 아니다 — 예약 버전이 있을 수 있다)을 후보로 한 줄 확인받는다.
 - 완료일 = 태그 날짜(`git log -1 --format=%cs {버전}`). 이후 `closedOn` · `openedOn`에 쓴다.
 
 ## 1. 근거
 
 - **report**: `docs/PDCA/*/{버전}-*/{stem}.report.md`를 디스크에서 읽는다. 판정이 갈리는 항목이 있으면 같은 폴더의 `analysis.md`도. 서버에서 내려받지 않는다.
-- **백로그 전건**: `npx pdcaw@1 backlog list --json` — 상태 필터 없이. 열린 것만 보면 닫힌 항목과의 중복 생성을 놓친다. 요약이라 detail은 없다 — 판단에 필요한 항목만 `npx pdcaw@1 backlog get <id> --json`으로 읽는다.
+- **백로그 전건**: `npx --no-audit -y pdcaw@1 backlog list --json` — 상태 필터 없이. 열린 것만 보면 닫힌 항목과의 중복 생성을 놓친다. 요약이라 detail은 없다 — 판단에 필요한 항목만 `npx --no-audit -y pdcaw@1 backlog get <id> --json`으로 읽는다.
 
 ## 2. 대조 대상 뽑기
 
@@ -47,7 +47,7 @@ report §2 완료 항목(백로그 id), §3.1 이월, §3.2 보류, §3.3 폐기
 - report 서술만 믿지 않는다. 백로그 원안(detail)이 요구한 범위와 대조한다. 원안이 A · B를 요구했는데 report가 A만 말하면 부분 해결이다.
 
 ```
-npx pdcaw@1 backlog update <id> --status done --closed-on <완료일> \
+npx --no-audit -y pdcaw@1 backlog update <id> --status done --closed-on <완료일> \
   --append-detail "[<완료일> 완료 — 근거: <버전> <SC/FR/§ 번호>. <왜 그렇게 판정했는지 한두 문장>]" --json
 ```
 
@@ -78,7 +78,7 @@ npx pdcaw@1 backlog update <id> --status done --closed-on <완료일> \
 - `--opened-on <완료일>`. detail 끝에 출처 `(<버전> report §<번호>)`.
 
 ```
-npx pdcaw@1 backlog create --title "<제목>" --priority <p> --opened-on <완료일> --detail-file <임시파일> --json
+npx --no-audit -y pdcaw@1 backlog create --title "<제목>" --priority <p> --opened-on <완료일> --detail-file <임시파일> --json
 ```
 
 ## 6. 전제가 바뀐 기존 항목 재평가
@@ -91,7 +91,7 @@ npx pdcaw@1 backlog create --title "<제목>" --priority <p> --opened-on <완료
 ## 7. 정체 항목 스윕 ★ 이 절차의 절반
 
 ```
-npx pdcaw@1 backlog list --stale 14 --json
+npx --no-audit -y pdcaw@1 backlog list --stale 14 --json
 ```
 
 1. 각 항목을 `backlog get`으로 읽어 detail의 **착수 조건 · 선행 항목 · 전제**가 그 사이 충족되거나 소멸했는지 대조한다. 대조 대상은 그 항목이 가리키는 report와 백로그 id다.

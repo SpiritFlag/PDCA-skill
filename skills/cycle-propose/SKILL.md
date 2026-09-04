@@ -8,22 +8,22 @@ description: "신규 사이클 선정 — 열린 백로그를 pdcaw CLI로 읽�
 열린 백로그에서 함께 처리하면 이득인 항목을 묶어 후보 2~3안을 만들고 사용자가 고르게 한다. **제안까지만 한다.** 읽기 전용이다.
 
 > **공통 규칙**
-> - 서버 접근은 `npx pdcaw@1 … --json`뿐이다. MCP 툴을 부르지 않는다.
+> - 서버 접근은 `npx --no-audit -y pdcaw@1 … --json`뿐이다. MCP 툴을 부르지 않는다.
 > - 문서는 디스크에서 읽는다. 사용자는 "사용자"다.
 
 ---
 
 ## 0. 프로젝트 확정
 
-- `.pdcarc.json`의 `projectId`가 대상이다. `npx pdcaw@1 project list --json`으로 이름을 확인해 첫 줄에 "프로젝트: {워크스페이스}/{프로젝트}"로 밝힌다.
+- `.pdcarc.json`의 `projectId`가 대상이다. `npx --no-audit -y pdcaw@1 project list --json`으로 이름을 확인해 첫 줄에 "프로젝트: {워크스페이스}/{프로젝트}"로 밝힌다.
 - `.pdcarc.json`이 없으면 `project list` 결과를 나열하고 사용자가 고르게 한다. 추측으로 진행하지 않는다.
 
 ## 1. 재료
 
-1. `npx pdcaw@1 backlog list --json` — 전 상태 요약. 후보는 `todo`에서만 고르되, 닫힌 항목은 "이미 해결된 것 아닌가"를 판정하는 근거로 쓴다.
-2. 후보로 올릴 항목은 `npx pdcaw@1 backlog get <id> --json`으로 detail을 **끝까지** 읽는다. detail이 문서를 가리키면(`v0.13.2 report §5.3` 등) 그 원문을 `docs/PDCA/` 아래에서 찾아 읽는다. 제목만 보고 묶지 않는다.
+1. `npx --no-audit -y pdcaw@1 backlog list --json` — 전 상태 요약. 후보는 `todo`에서만 고르되, 닫힌 항목은 "이미 해결된 것 아닌가"를 판정하는 근거로 쓴다.
+2. 후보로 올릴 항목은 `npx --no-audit -y pdcaw@1 backlog get <id> --json`으로 detail을 **끝까지** 읽는다. detail이 문서를 가리키면(`v0.13.2 report §5.3` 등) 그 원문을 `docs/PDCA/` 아래에서 찾아 읽는다. 제목만 보고 묶지 않는다.
 3. 직전 사이클 report — `docs/PDCA/` 아래 버전이 가장 높은 폴더의 `*.report.md`. §3(이월 · 보류)과 §5.3(Try), §7(후보)을 읽는다.
-4. 버전 사다리 — `git tag`와 `npx pdcaw@1 cycle list --json`. 서버에 예약된 미래 버전이 있으면 존중한다.
+4. 버전 사다리 — `git tag`와 `npx --no-audit -y pdcaw@1 cycle list --json`. 서버에 예약된 미래 버전이 있으면 존중한다.
 5. `docs/PDCA/_INDEX.md`의 메이저 절 제목(현재 메이저와 코드네임).
 
 ## 2. 묶는 기준

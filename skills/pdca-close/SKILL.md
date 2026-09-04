@@ -8,7 +8,7 @@ description: "PDCA 사이클을 닫는다 — do 기록을 감사한 analysis, �
 이 세션이 Act 전체다. 감사 → 보고 → 릴리즈노트 → 인덱스 → 머지 · 태그 → 업로드 → main → 백로그. 비가역 단계(푸시 · 태그 · main 전진)는 매번 사용자 확인을 받는다.
 
 > **공통 규칙**
-> - 서버 접근은 `npx pdcaw@1 … --json`뿐이다. MCP 툴을 부르지 않는다.
+> - 서버 접근은 `npx --no-audit -y pdcaw@1 … --json`뿐이다. MCP 툴을 부르지 않는다.
 > - 문서는 디스크에서 읽는다. 사용자는 "사용자"다. 링크 금지. 합산 수치 · 점수 · 비율을 만들지 않는다.
 > - 판단이 갈리는 것은 질문으로 남긴다. 폐기 · 버전 변경은 사용자만 정한다.
 
@@ -31,7 +31,7 @@ description: "PDCA 사이클을 닫는다 — do 기록을 감사한 analysis, �
 | (사이클) 질문 파일 없음 | `ls docs/PDCA/v{major}/{stem}/*.q*.md` 가 비어야 함 |
 | 작업트리 깨끗함, 브랜치 푸시됨 | `git status`, `git log @{u}..` |
 | 브랜치 CI 초록 | RULE.md의 CI 확인 명령. 없으면 사용자에게 "CI 초록 확인했나"를 묻고 답을 받는다 |
-| 버전 충돌 없음 | `git tag`에 없음, `npx pdcaw@1 cycle list --json`에 없음 |
+| 버전 충돌 없음 | `git tag`에 없음, `npx --no-audit -y pdcaw@1 cycle list --json`에 없음 |
 
 ## 2. analysis (사이클 모드)
 
@@ -107,7 +107,7 @@ git rev-parse {버전}^{}   # 머지 커밋 SHA와 같아야 한다
 ## 9. 업로드
 
 ```
-npx pdcaw@1 upload --version {버전}
+npx --no-audit -y pdcaw@1 upload --version {버전}
 ```
 릴리즈 생성(있으면 재사용) + 변경 문서 업로드 + release.md를 릴리즈노트로. 실패하면 출력을 그대로 보고하고 §10으로 가지 않는다.
 
