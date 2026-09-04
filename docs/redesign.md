@@ -371,7 +371,8 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 ```
 
 - `--append-detail`은 클라이언트가 기존 detail을 읽어 새 블록을 앞에 붙이고 통째로 PATCH한다(서버 변경 없이 먼저 가능). 서버에 append가 생기면 그걸로 바꾼다.
-- `backlog list`가 요약만 돌려주므로 100건 넘어도 컨텍스트에 들어온다. detail은 `get`으로 필요한 건만.
+- `backlog list`가 요약만 돌려주므로 100건 넘어도 컨텍스트에 들어온다. detail은 `get`으로 필요한 건만. (구현: 서버에 단건 GET · 요약 필터가 생기기 전까지 CLI가 전건을 받아 클라이언트에서 거른다. 서버 §9.2가 붙으면 그쪽으로 옮긴다.)
+- 구현 상태: pdcaw 1.0.0(`claude/pdcaw-v1` 브랜치). 91 테스트, 목 서버 스모크 전 명령 통과. `upload --version`은 서버 §9.1(`cycles.dir`, 6 stage) 이후에만 성공한다.
 - `--stale`는 `status=todo`이고 `updatedAt`이 N일 이상 지난 것. backlog-sync 정체 스윕이 쓴다.
 - 설정 · 인증 · 루트 판정은 현행 그대로(`.pdcarc.json`, `.env.local`의 `PDCAW_PAT`).
 - 인자 표면 변경이므로 pdcaw는 major 범프(v1.0.0).

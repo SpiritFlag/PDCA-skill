@@ -44,13 +44,15 @@ propose  →  plan  →  design  →  do (세션 N개)  →  close
 | `pdca-close` | 감사 → report → release → 인덱스 → 머지 · 태그 → 업로드 → 백로그 동기화 |
 | `backlog-sync` | 닫힌 사이클 기준으로 백로그 갱신. close가 마지막에 부르지만 단독 실행도 됨 |
 
-### 2.2 pdcaw CLI ⏳
+### 2.2 pdcaw CLI
 
 스킬이 서버를 만지는 유일한 통로. MCP는 쓰지 않는다(회사 계정처럼 MCP를 못 붙이는 환경에서도 돌게 하기 위해).
 
 ```bash
-npx pdcaw --help
+npx pdcaw@1 --help
 ```
+
+pdcaw 1.x는 서버 쪽 `cycles.dir` · 6 stage 변경(아래 §9)이 배포된 PDCA-workspace를 전제한다. 그 전까지 `upload --version`은 실패하고 나머지 명령은 동작한다.
 
 레포 루트에 두 파일이 필요하다.
 
@@ -237,20 +239,23 @@ CI는 사이클 브랜치 푸시마다 전체 테스트를 돈다. 느리거나 
 - 질문은 `{어간}.qN.md`. 답 반영 후 삭제.
 - release만 헤더 · Version History가 없다.
 
-## 6. CLI 요약 ⏳
+## 6. CLI 요약
 
 ```
 pdcaw upload   [--version vX.Y.Z] [--all] [--path <p>]...
 pdcaw project  list
 pdcaw cycle    list
-pdcaw backlog  list [--status s,...] [--stale <days>] [--q <text>]
-pdcaw backlog  get <id>
-pdcaw backlog  create --title <t> --priority <p> --opened-on <d> [--detail-file <f>]
-pdcaw backlog  update <id> [--status s] [--closed-on d] [--append-detail <t|@file>] ...
-pdcaw doc      collect --stage <s> [--major vN] --out <dir|file>
+pdcaw backlog  list   [--status s,...] [--stale <days>] [--q <text>]
+pdcaw backlog  get    <id|접두 8자+>
+pdcaw backlog  create --title <t> --priority <p> --opened-on <d> [--detail <t> | --detail-file <f>]
+pdcaw backlog  update <id> [--status s] [--closed-on d] [--title t] [--priority p]
+                           [--detail <t> | --detail-file <f> | --append-detail <t|@file>]
+pdcaw doc      collect --stage <s> [--major vN] --out <dir|file.md>
 ```
 
-모두 `--json`을 받는다. 스킬은 `--json`만 쓴다. `doc collect`는 로컬만 본다(리포트만 싹 긁어 웹 클로드에 올릴 때).
+모두 `--json`을 받는다. 스킬은 `--json`만 쓴다. `backlog list`는 detail 없는 요약이라 100건이 넘어도 컨텍스트에 들어오고, detail은 `get`으로 한 건씩 본다. `--append-detail`은 기존 본문을 그대로 두고 앞에 블록을 얹는다. `--status todo`는 거부한다(재개는 사용자가 UI에서). `doc collect`는 로컬만 본다(리포트만 싹 긁어 웹 클로드에 올릴 때).
+
+`upload --version v1.2.0`은 `docs/PDCA/*/v1.2.0-*/` 폴더를 찾아 릴리즈를 만들고(있으면 재사용), 변경 문서를 올린 뒤, 그 폴더의 `*.release.md`를 릴리즈노트로 넣는다. 폴더가 없거나 둘이면 아무것도 하지 않고 멈춘다.
 
 ## 7. 자주 묻는 것
 
