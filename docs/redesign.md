@@ -450,6 +450,11 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 | 사이클명 유일성, 서버 `(project, name)` 유니크, pdcaw `--cycle` | 버전이 열쇠. 사이클명은 꼬리표 |
 | develop → main 체리픽 | 역사가 갈라지고 `git describe`가 어긋남. 태그로 ff만 |
 
+### 6.3 구현 상태
+- 여섯 스킬 모두 `skills/<이름>/SKILL.md`로 작성됐다. 템플릿은 각 스킬 폴더에 동봉.
+- 스킬은 서버를 `npx pdcaw@1 … --json`으로만 만지고 문서는 디스크에서 읽는다. MCP 호출 지시는 어디에도 없다.
+- 첫 실전 사이클(sing-diary)이 검증이다. 거기서 나온 마찰은 report §6이 스킬 · RULE · CLI · 서버 중 어디를 고칠지 지목한다.
+
 ## 11. 작업 순서
 
 스킬이 CLI에 의존하고 CLI가 서버 API에 의존하므로 **표면을 먼저 고정**하고 구현은 병렬로 간다.
