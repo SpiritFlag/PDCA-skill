@@ -76,12 +76,14 @@ bkit PDCA 스킬을 커스텀해 쓰다가 손볼 곳이 계속 늘었다. 원�
 ```
 # {cycle} {단계명}
 
-| 프로젝트 | 사이클 | 버전 | 상태 | 작성 | 확정 |
+| 프로젝트 | 사이클 | 버전 | 상태 | 작성 | 갱신 |
 |---|---|---|---|---|---|
 | sing-diary | enhance-lyric-sync | v0.4.0 | 확정 | 2026-09-04 | 2026-09-05 |
 ```
 
-상태 값: plan · design은 `초안 → 확정`, do는 `진행 중 → 완료`, analysis · report · release는 `완료`만.
+상태 값: plan · design은 `초안 → 확정`, do는 `진행 중 → 완료`, analysis · report는 `완료`만. 갱신은 마지막으로 고친 날이라 확정일 · 완료일을 겸한다.
+
+**release는 예외**로 헤더 표와 Version History를 두지 않는다. 독자가 서비스 사용자라 제목과 첫 줄(버전 · 날짜)이 진실이다.
 
 **요약 절은 없다.** 문서 상단에 Executive Summary, Context Anchor 류를 두지 않는다. plan §1 목적 한 단락과 report §1 결과 한 단락이 그 역할을 하며, 둘은 "개정 시 늘리지 않고 다시 쓴다".
 
@@ -350,7 +352,7 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 스킬이 CLI에 의존하고 CLI가 서버 API에 의존하므로 **표면을 먼저 고정**하고 구현은 병렬로 간다.
 
 1. 이 문서 확정.
-2. `templates/` 6종 + `RULE.template.md` (이 레포).
+2. 템플릿 6종은 각 스킬 폴더에(`skills/pdca-plan/plan.template.md`, `skills/pdca-close/{analysis,report,release}.template.md` 등), `RULE.template.md`는 `templates/`에 (이 레포).
 3. pdcaw 명령 표면 고정 → 구현(`backlog` `cycle` `project`는 기존 REST로 즉시 가능, `upload` releaseNote 연동은 서버 9.1 뒤).
 4. 스킬 6개 작성(이 레포). CLI 표면만 알면 서버 없이 쓸 수 있다.
 5. 서버 9.1 → 9.2 → 9.5 → 9.4 → 9.3.
