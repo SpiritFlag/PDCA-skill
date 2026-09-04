@@ -393,7 +393,7 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 
 ## 9. PDCA-workspace 변경
 
-### 9.1 stage · 경로 확장
+### 9.1 stage · 경로 확장 (구현됨)
 - `pdcaStageSchema` · `pdca_stage` enum에 `do` `release` 추가. 마이그레이션(dev · main 각각 적용).
 - `PDCA_STAGES` 6종, `STAGE_COLOR` 6색, 릴리즈 페이지 문서 버튼 4 → 6, 사이드바 트리 동일.
 - **경로를 계산하지 않고 기록한다.** `cycles.yearMonth` → `cycles.dir`(사이클 폴더 경로, 예 `docs/PDCA/v1/v1.2.0-enhance-lyric-sync`). pdcaw가 올린 실제 경로를 저장하고 UI는 `{dir}/{basename(dir)}.{stage}.md`로 문서를 찾는다. 기존 행은 마이그레이션에서 `docs/PDCA/{yearMonth}/{name}`으로 채운다.
@@ -401,24 +401,31 @@ pdcaw doc      outline <path> | read <path> [--section <n>] | grep <pattern> [--
 - 파서 규칙은 하나로 줄인다: `docs/PDCA/**/{stem}/{stem}.{stage}.md`, 폴더명 == 파일 어간, 어간은 `{version}-{name}`. 상위 경로는 자유. pdcaw `cycle-path.ts` 사본도 함께.
 - 사이클 생성 시 `name`은 어간에서 버전 접두를 뗀 사이클명(`enhance-lyric-sync`), `version`은 접두(`v1.2.0`). 브랜치명 · 폴더명 · `--version`이 어긋나면 pdcaw가 중단한다.
 
-### 9.2 백로그 API
-- `GET /projects/:id/backlog`: 기본 응답에서 `detail` 제외. `?detail=1`로 포함. `?stale=<days>` `?q=<text>` 필터.
+### 9.2 백로그 API (구현됨)
+- `GET /projects/:id/backlog?status=a,b&stale=<days>&q=<text>`: 전체 행(웹 보드용). 필터는 서버.
+- `GET /projects/:id/backlog/summary?…`: `detail` 없는 요약 행. 응답 타입이 유니온이 되지 않게 경로로 갈랐다(Hono RPC 타입 전파 때문).
 - `GET /backlog/:id` 신설(단건, detail 포함).
-- `PATCH /backlog/:id`에 `appendDetail` 필드(서버가 기존 detail 앞에 붙임). 원안 보존을 서버가 책임진다.
-- MCP 툴도 같은 형태로: `backlog_list` 요약화, `backlog_get` 신설, `backlog_update`에 `appendDetail`.
+- `PATCH /backlog/:id`에 `appendDetail` 필드(서버가 기존 detail 앞에 붙임, `detail`과 동시 지정은 400). 원안 보존을 서버가 책임진다.
+- MCP: `backlog_list` 기본 요약 + `staleDays` `q` `detail:true`, `backlog_get` 신설, `backlog_update`에 `appendDetail`. 툴 11개.
+- 순수 함수(`filterBacklogRows` `stripDetail` `prependDetail`)는 `shared/backlog.ts` 한곳. pdcaw는 이 엔드포인트를 그대로 쓴다(클라이언트 필터 제거).
 
-### 9.3 문서 API (웹 클로드용, 후순위)
+### 9.3 문서 API (웹 클로드용, 후순위 — 미착수)
 - `document_outline(path)`: 헤딩 트리만.
 - `document_read(path, section?)`: 절 번호나 헤딩 텍스트로 그 절만.
 - `document_grep(pattern, stage?, cycle?)`: 일치 행 + 전후 N행.
 - REST 동형 엔드포인트. CC는 로컬 grep을 쓰므로 이 기능은 웹 문답 품질용이다.
 
-### 9.4 릴리즈노트
+### 9.4 릴리즈노트 (구현됨)
 - `release` 문서가 존재하면 릴리즈 페이지는 그것을 렌더한다. `cycles.releaseNote` 필드는 기존 데이터와 수동 입력용으로 남긴다. 둘 다 있으면 문서 우선.
 - pdcaw `upload --version`이 release.md를 `releaseNote`에도 써 넣는다(구 UI 호환).
 
-### 9.5 삭제
+### 9.5 삭제 (구현됨)
 - MCP 프롬프트 `backlog_sync` `make_cc_prompt` 삭제. 절차는 스킬이 정본이다.
+
+### 9.6 구현 상태
+- `claude/workspace-v1` 브랜치. §9.1 · §9.2 · §9.4 · §9.5 완료, §9.3(문서 outline/section/grep)은 후순위로 미착수.
+- 마이그레이션 `0004_pdca_v1_stage_dir`(enum 값 · `dir` 추가 · `year_month`에서 백필) → `0005_pdca_v1_drop_year_month`(`year_month` · `cycles_proj_name_uq` 제거). dev · main Neon 브랜치에 각각 적용해야 하며, 이는 사용자가 한다. enum 값 추가는 되돌릴 수 없다.
+- `tsc -b` · vitest 74 · oxlint · vite build 통과. L1 하네스(실 DB)는 이 세션에서 돌리지 않았다.
 
 ## 10. 폐기 목록
 

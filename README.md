@@ -52,7 +52,7 @@ propose  →  plan  →  design  →  do (세션 N개)  →  close
 npx pdcaw@1 --help
 ```
 
-pdcaw 1.x는 서버 쪽 `cycles.dir` · 6 stage 변경(아래 §9)이 배포된 PDCA-workspace를 전제한다. 그 전까지 `upload --version`은 실패하고 나머지 명령은 동작한다.
+pdcaw 1.x는 서버 쪽 변경(`cycles.dir` · 6 stage · 백로그 요약/단건/appendDetail)이 배포된 PDCA-workspace를 전제한다. 서버 브랜치 `claude/workspace-v1`이 그 변경이고, 마이그레이션 0004 · 0005를 dev · main에 적용한 뒤 배포한다.
 
 레포 루트에 두 파일이 필요하다.
 
